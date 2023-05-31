@@ -1,0 +1,31 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "45b5cf93-84dc-4700-af30-c73a1829f4e9": {
+      "ProjectGuid": "45b5cf93-84dc-4700-af30-c73a1829f4e9",
+      "DisplayName": "ECommerce.Api",
+      "ColorIndex": 0
+    },
+    "f7efaa8e-ca8e-4a9a-af79-abd0f3360c9b": {
+      "ProjectGuid": "f7efaa8e-ca8e-4a9a-af79-abd0f3360c9b",
+      "DisplayName": "Common",
+      "ColorIndex": 1
+    },
+    "569286e1-1302-4b87-b437-1a9291c9c82e": {
+      "ProjectGuid": "569286e1-1302-4b87-b437-1a9291c9c82e",
+      "DisplayName": "Services",
+      "ColorIndex": 2
+    },
+    "884e1576-10f9-4d7d-ae8d-29b5144a142b": {
+      "ProjectGuid": "884e1576-10f9-4d7d-ae8d-29b5144a142b",
+      "DisplayName": "Data",
+      "ColorIndex": 3
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Miscellaneous Files",
+      "ColorIndex": -1
+    }
+  },
+  "NextColorIndex": 4
+}

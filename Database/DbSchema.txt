@@ -1,0 +1,180 @@
+Scaffold-Dbcontext -provider Microsoft.EntityFrameworkCore.SqlServer -connection "Data Source=PCT79\SQL2019;DataBase=ECommerceDB;User ID=sa;Password=Tatva@123;" -OutputDir "Entities" -ContextDir "Context" -f
+
+
+tblUsers(
+UserId bigint Identity PK,
+FirstName varchar(50) not null,
+LastName varchar(80),
+Email varchar(255) not null,
+Password varchar(255) not null,
+PhoneNumber varchar(16) not null,
+IsActive bit default 1,
+ProfileImg varchar(500),
+RoleId tinyint default 1 not null FK Roles(RoleId),
+CountryId tinyint not null FK Country(CountryId),
+CityId int not null FK City(CityId),
+CreatedAt datetime default current_timestamp,
+UpdatedAt datetime,
+DeletedAt datetime,
+);
+tblRoles(
+RoleId bigint Identity PK,
+Role varchar(25),
+IsActive bit default 1,
+);
+tblCountries(
+CountryId tinyint identity PK,
+CountryName varchar(60) not null,
+IsActive bit default 1,
+);
+tblCities(
+CityId int Identity PK,
+CityName varchar(90) not null,
+IsActive bit default 1,
+CountryId tinyint not null FK Countries(CountryId),
+);
+tblProductMedia(
+MediaId bigint Identity PK,
+MediaName varchar(255),
+MediaUrl varchar(500) not null,
+MediaType varchar(20) not null,
+IsDefault bit default 0,
+ProductId bigint FK Product(ProductId),
+CreatedAt datetime default current_timestamp,
+UpdatedAt datetime,
+DeletedAt datetime,
+);
+tblCategories(
+CategoryId smallint Identity PK,
+CategoryName varchar(50) not null,
+IsActive bit default 1,
+);
+tblSubCategories(
+SubCategoryId int Identity PK,
+SubCategoryName varchar(50) not null,
+IsActive bit default 1,
+CategoryId smallint not null,
+);
+tblSuppliers(
+SupplierId bigint Identity PK,
+SupplierName varchar(100) not null,
+ContactNumber varchar(16) not null, 
+ContactEmail varchar(255) not null,
+IsActive bit default 1,
+CreatedAt DateTime default current_timestamp,
+UpdatedAt DateTime,
+DeletedAt DateTime,
+);
+tblCompanies(
+CompanyId bigint Identity PK,
+CompanyName varchar(100) not null,
+CompanyAddress varchar(255) not null,
+[ContactEmail] varchar(255) not null,
+CountryId tinyint not null FK Countries(CountryId),
+IsActive bit default 1,
+CreatedAt DateTime default current_timestamp,
+UpdatedAt DateTime,
+);
+tblProducts (
+ProductId BIGINT IDENTITY PK,
+ProductName VARCHAR(255) NOT NULL,
+Description TEXT,
+SKU VARCHAR(50) NOT NULL,
+Price DECIMAL(10, 2) DEFAULT 0,
+Discount DECIMAL(5,2) DEFAULT 0,
+IsFree BIT NOT NULL, --CHECK FROM FORM IF TRUE THEN PRICE 0 ELSE PRICE REQUIRED
+CategoryId SMALLINT NOT NULL FK Categories(CategoryId),
+CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+UpdatedAt DATETIME,
+DeletedAt DATETIME,
+);
+tblProductRatings(
+RatingId bigint Identity PK,
+Ratings tinyint,
+UserId bigint not null FK Ussers(UserId),
+ProductId bigint not null FK Products(ProductId),
+CreatedAt DateTime default current_timestamp,
+UpdatedAt DateTime,
+);
+tblProductReviews(
+ProductReviewId bigint Identity PK,
+Description varchar(1000) not null,
+UserId bigint not null FK Users(UserId),
+ProductId bigint not null FK Products(ProductId),
+CreatedAt DateTime default current_timestamp,
+UpdatedAt DateTime,
+DeletedAt DateTime,
+);
+tblProductReviewMedias(
+ReviewMediaId bigint PK,
+MeidaName varchar(255),
+MediaUrl varchar(500) not null,
+MediaType varchar(20) not null,
+ProductReviewId bigint not null FK ProductReviews(ProductReviewId),
+CreatedAt DateTime default current_timestamp,
+UpdatedAt DateTime,
+DeletedAt DateTime,
+);
+tblCarts(
+CartId bigint Identity PK,
+UserId bigint not null FK Users(UserId),
+ProductId bigint not null FK Products(ProductId),
+Quantity tinyint default 1,
+TotalAmountPaid decimal(12,2),
+IsRemoved bit default 0,
+);
+tblOrders(
+OrderId bigint Identity PK,
+ProductId bigint not null FK Products(ProductId),
+UserId bigint not null FK Users(UserId),
+Quantity tinyint default 1,
+TotalAmountPayed decimal(10,2),
+PaymentMethodId bit not null FK tblPaymentMethods(PaymentMethodId),
+UserAddressId bigint not null FK tblUserAddresses(UserAddressId),
+SupplierId bigint not null FK tblSuppliers(SupplierId),
+OrderedAt DateTime default current_timestamp,
+CanceledAt DateTime,
+);
+tblPaymentMethods(
+PaymentMethodId tinyint PK,
+PaymentMethodName varchar(25) not null,
+IsActive bit default 1,
+);
+tblUserAddresses(
+UserAddressId tinyint Identity(1,1) PRIMARY KEY CHECK(UserAddressId > 0),
+AddressLine1 varchar(100) not null,
+AddressLine2 varchar(100),
+UserId bigint not null FK Users(UserId),
+CountryId tinyint not null FK Countries(CountryId),
+CityId smallint not null FK Cities(CityId),
+PostalCode tinyint,
+IsDeleted bit default 0,
+);
+
+tblProductSupplierMapping(
+ProductId bigint not null,
+SupplierId bigint, --supplier may not be available
+AvailableStocks int,
+PRIMARY KEY(ProductId,SupplierId)
+);
+
+
+//CALCULATE DELIVERY ESTIMATION
+SELECT
+  p.ProductId,
+  p.Name,
+  u.FirstName,
+  u.LastName,
+  c.CountryName,
+  ct.CityName,
+  DATE_ADD(NOW(), INTERVAL (processingTime + shippingTime + @trasientTime take as input parameter) DAY) AS EstimatedDeliveryDate
+FROM
+  Users u
+  JOIN Countries c ON u.CountryId = c.CountryId
+  JOIN Cities ct ON u.CityId = ct.CityId
+  JOIN Inventory i ON i.CountryId = u.CountryId AND i.CityId = u.CityId
+  JOIN Products p ON p.InventoryId = i.InventoryId
+WHERE
+  u.UserId = <user_id>
+  AND p.ProductId = <product_id>;
+
